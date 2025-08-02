@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>App Dulce Ganancia</title>
+    
+    <!-- Enlazando la hoja de estilos externa -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="app-container">
+        
+        <!-- PANTALLA 1: INICIO DE SESIÓN -->
+        <div id="login-screen" class="screen active">
+            <div>
+                <div class="login-icon">🧁</div>
+                <h2>Bienvenido/a a</h2>
+                <h1>Dulce Ganancia</h1>
+                <p>La herramienta para calcular costos y asegurar la rentabilidad de tu negocio de repostería.</p>
+                <button id="login-button" class="btn btn-primary">G | Continuar con Google</button>
+            </div>
+        </div>
+        
+        <!-- PANTALLA 2: PRINCIPAL (CONTENEDOR DE PESTAÑAS) -->
+        <div id="main-screen" class="screen">
+            <div id="main-content"></div>
+            <div id="bottom-nav">
+                <button class="nav-button active" data-tab="recipes">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.75 3.375C12.75 2.61468 12.1353 2 11.375 2C10.6147 2 10 2.61468 10 3.375V11.25H4.88647C4.12615 11.25 3.51147 11.8647 3.51147 12.625C3.51147 13.3853 4.12615 14 4.88647 14H10V20.625C10 21.3853 10.6147 22 11.375 22C12.1353 22 12.75 21.3853 12.75 20.625V14H18.8635C19.6238 14 20.2385 13.3853 20.2385 12.625C20.2385 11.8647 19.6238 11.25 18.8635 11.25H12.75V3.375Z" /></svg>
+                    <span>Recetas</span>
+                </button>
+                <button class="nav-button" data-tab="ingredients">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.625 2C6.30719 2 2 6.30719 2 11.625C2 16.9428 6.30719 21.25 11.625 21.25C16.9428 21.25 21.25 16.9428 21.25 11.625C21.25 6.30719 16.9428 2 11.625 2ZM11.625 19.5C7.23422 19.5 3.75 16.0158 3.75 11.625C3.75 7.23422 7.23422 3.75 11.625 3.75C16.0158 3.75 19.5 7.23422 19.5 11.625C19.5 16.0158 16.0158 19.5 11.625 19.5Z" /><path d="M12.5 7.25C12.5 6.69772 12.0523 6.25 11.5 6.25C10.9477 6.25 10.5 6.69772 10.5 7.25V10.5H7.25C6.69772 10.5 6.25 10.9477 6.25 11.5C6.25 12.0523 6.69772 12.5 7.25 12.5H10.5V15.75C10.5 16.3023 10.9477 16.75 11.5 16.75C12.0523 16.75 12.5 16.3023 12.5 15.75V12.5H15.75C16.3023 12.5 16.75 12.0523 16.75 11.5C16.75 10.9477 16.3023 10.5 15.75 10.5H12.5V7.25Z" /></svg>
+                    <span>Ingredientes</span>
+                </button>
+                <button class="nav-button" data-tab="profile">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C14.7614 2 17 4.23858 17 7C17 9.76142 14.7614 12 12 12C9.23858 12 7 9.76142 7 7C7 4.23858 9.23858 2 12 2Z" /><path d="M21.3056 20.3323C21.3056 22 19.3323 22 12 22C4.66772 22 2.69442 22 2.69442 20.3323C2.69442 18.6645 5.83601 16.5273 12 16.5273C18.164 16.5273 21.3056 18.6645 21.3056 20.3323Z" /></svg>
+                    <span>Mi Perfil</span>
+                </button>
+            </div>
+        </div>
+        
+        <div id="recipe-detail-screen" class="screen"></div>
+        <div id="form-screen" class="screen"></div>
+    </div>
+
+    <script>
+    // --- SIMULACIÓN DE BASE DE DATOS (TODA TU LÓGICA ESTÁ 100% INTACTA) ---
+const db = {
+    user: null,
+    ingredients: [],
+    recipes: [],
+    ingredientsPerRecipe: []
+};
+
+// --- ICONOS SVG ---
+const ICONS = {
+    back: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10.8284 12.0007L15.7782 16.9504L14.364 18.3646L8 12.0007L14.364 5.63672L15.7782 7.05093L10.8284 12.0007Z"></path></svg>`,
+    options: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C10.9 3 10 3.9 10 5C10 6.1 10.9 7 12 7C13.1 7 14 6.1 14 5C14 3.9 13.1 3 12 3ZM12 17C10.9 17 10 17.9 10 19C10 20.1 10.9 21 12 21C13.1 21 14 20.1 14 19C14 17.9 13.1 17 12 17ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z"></path></svg>`,
+    chart: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3C16.5523 3 17 3.44772 17 4V17C17 17.5523 16.5523 18 16 18H3C2.44772 18 2 17.5523 2 17V4C2 3.44772 2.44772 3 3 3H16ZM15 5H4V16H15V5ZM20 7C20.5523 7 21 7.44772 21 8V21C21 21.5523 20.5523 22 20 22H7C6.44772 22 6 21.5523 6 21C6 20.4477 6.44772 20 7 20H20V8C20 7.44772 20.5523 7 20 7Z"></path></svg>`,
+};
+
+// --- LÓGICA DE LA APLICACIÓN (SIN CAMBIOS FUNCIONALES) ---
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('login-button').addEventListener('click', () => {
+        db.user = { 
+            name: 'Ana Repostera', 
+            email: 'ana.repostera@email.com',
+            costoHora: 15.00,
+            costoServicios: 2.50,
+            gananciaDeseada: 0.40
+        };
+        showScreen('main-screen');
+        renderTabContent('recipes');
+    });
+
+    document.getElementById('bottom-nav').addEventListener('click', (e) => {
+        const navButton = e.target.closest('.nav-button');
+        if (navButton) {
+            document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
+            navButton.classList.add('active');
+            renderTabContent(navButton.dataset.tab);
+        }
+    });
+});
+
+function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+}
+
+function renderTabContent(tabName) {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = '';
+    
+    let fabHtml = '';
+    let contentHtml = '';
+
+    switch(tabName) {
+        case 'recipes':
+            contentHtml = `<header><h2>Mis Recetas</h2></header><div id="recipes-list"></div>`;
+            fabHtml = `<button class="fab" onclick="showRecipeForm()">+</button>`;
+            mainContent.innerHTML = contentHtml + fabHtml;
+            renderRecipesList();
+            break;
+        case 'ingredients':
+            contentHtml = `<header><h2>Mis Ingredientes</h2></header><div id="ingredients-list"></div>`;
+            fabHtml = `<button class="fab" onclick="showIngredientForm()">+</button>`;
+            mainContent.innerHTML = contentHtml + fabHtml;
+            renderIngredientsList();
+            break;
+        case 'profile':
+            mainContent.innerHTML = `
+                <header><h2>Mi Perfil</h2></header>
+                <div class="form-group">
+                    <label>Costo por Hora (S/)</label>
+                    <input type="number" step="0.01" id="profile-costo-hora" value="${db.user.costoHora.toFixed(2)}">
+                </div>
+                <div class="form-group">
+                    <label>Costo Servicios/Hora (S/)</label>
+                    <input type="number" step="0.01" id="profile-costo-servicios" value="${db.user.costoServicios.toFixed(2)}">
+                </div>
+                <div class="form-group">
+                    <label>% Ganancia Deseada</label>
+                    <input type="number" id="profile-ganancia" value="${db.user.gananciaDeseada * 100}">
+                </div>
+                <button class="btn btn-primary" onclick="saveProfileChanges()">Guardar Cambios</button>
+                <button class="btn btn-secondary" onclick="showScreen('login-screen')">Cerrar Sesión</button>
+            `;
+            break;
+    }
+}
+
+function renderRecipesList() {
+    const listContainer = document.getElementById('recipes-list');
+    if (db.recipes.length === 0) {
+        listContainer.innerHTML = '<div class="empty-state">Aún no has creado ninguna receta.<br>¡Presiona el botón + para empezar!</div>';
+        return;
+    }
+    listContainer.innerHTML = db.recipes.map(recipe => `
+        <div class="list-item">
+            <div class="list-item-content" onclick="showRecipeDetail('${recipe.id}')">
+                <strong>${recipe.nombre}</strong><br>
+                <small>${recipe.porciones} porciones</small>
+            </div>
+            <button class="item-menu" onclick="event.stopPropagation(); showRecipeForm('${recipe.id}')">${ICONS.options}</button>
+        </div>
+    `).join('');
+}
+
+function renderIngredientsList() {
+    const listContainer = document.getElementById('ingredients-list');
+    if (db.ingredients.length === 0) {
+        listContainer.innerHTML = '<div class="empty-state">Aún no has añadido ningún ingrediente.<br>¡Presiona el botón + para empezar!</div>';
+        return;
+    }
+    listContainer.innerHTML = db.ingredients.map(ing => `
+        <div class="list-item">
+            <div class="list-item-content">
+                <strong>${ing.nombre}</strong><br>
+                <small>S/ ${ing.costoPorUnidad.toFixed(4)} / ${ing.unidad}</small>
+            </div>
+            <button class="item-menu" onclick="event.stopPropagation(); showIngredientForm('${ing.id}')">${ICONS.options}</button>
+        </div>
+    `).join('');
+}
+
+function showRecipeDetail(recipeId) {
+    const recipe = db.recipes.find(r => r.id === recipeId);
+    if (!recipe) return;
+    const detailScreen = document.getElementById('recipe-detail-screen');
+    
+    const ingredientesDeReceta = db.ingredientsPerRecipe.filter(ipr => ipr.recipeId === recipeId);
+    let costoIngredientes = 0;
+    ingredientesDeReceta.forEach(ipr => {
+        const ingredienteMaestro = db.ingredients.find(i => i.id === ipr.ingredientId);
+        if (ingredienteMaestro) costoIngredientes += ingredienteMaestro.costoPorUnidad * ipr.cantidad;
+    });
+    
+    const costoManoDeObra = db.user.costoHora * recipe.tiempo;
+    const costoServiciosReceta = db.user.costoServicios * recipe.tiempo;
+    const costoTotal = costoIngredientes + costoManoDeObra + costoServiciosReceta + recipe.empaque;
+    const gananciaNeta = costoTotal * db.user.gananciaDeseada;
+    const precioVenta = costoTotal + gananciaNeta;
+    const precioPorcion = recipe.porciones > 0 ? precioVenta / recipe.porciones : 0;
+
+    detailScreen.innerHTML = `
+        <header>
+            <button class="back-button" onclick="showScreen('main-screen'); renderTabContent('recipes');">${ICONS.back}</button>
+            <h2>${recipe.nombre}</h2>
+        </header>
+        <div class="rentabilidad">
+            <h3>${ICONS.chart} Análisis de Rentabilidad</h3>
+            <p><span>Costo Ingredientes</span> <strong>S/ ${costoIngredientes.toFixed(2)}</strong></p>
+            <p><span>Mano de Obra (${recipe.tiempo}h)</span> <strong>S/ ${costoManoDeObra.toFixed(2)}</strong></p>
+            <p><span>Servicios (Luz/Gas)</span> <strong>S/ ${costoServiciosReceta.toFixed(2)}</strong></p>
+            <p><span>Empaque y Otros</span> <strong>S/ ${recipe.empaque.toFixed(2)}</strong></p>
+            <hr>
+            <p><span>COSTO TOTAL</span> <strong>S/ ${costoTotal.toFixed(2)}</strong></p>
+            <p><span>Ganancia (${(db.user.gananciaDeseada * 100).toFixed(0)}%)</span> <strong>S/ ${gananciaNeta.toFixed(2)}</strong></p>
+            <p class="precio-final"><span>PRECIO VENTA</span> <strong>S/ ${precioVenta.toFixed(2)}</strong></p>
+            <p><span>Precio por Porción</span> <strong>S/ ${precioPorcion.toFixed(2)}</strong></p>
+        </div>
+        
+        <header><h3>Ingredientes de la Receta</h3></header>
+        <div id="recipe-ingredients-list"></div>
+        <button class="btn btn-secondary" onclick="showAddIngredientToRecipeForm('${recipe.id}')">+ Añadir Ingrediente</button>
+    `;
+    renderRecipeIngredientsList(recipeId);
+    showScreen('recipe-detail-screen');
+}
+
+function renderRecipeIngredientsList(recipeId) {
+    const listContainer = document.getElementById('recipe-ingredients-list');
+    const ingredientesDeReceta = db.ingredientsPerRecipe.filter(ipr => ipr.recipeId === recipeId);
+    if (ingredientesDeReceta.length === 0) {
+        listContainer.innerHTML = '<div class="empty-state">Añade los ingredientes que usas en esta receta.</div>';
+        return;
+    }
+    listContainer.innerHTML = ingredientesDeReceta.map(ipr => {
+        const ingredienteMaestro = db.ingredients.find(i => i.id === ipr.ingredientId);
+        return `
+            <div class="list-item">
+                <div class="list-item-content">
+                    <strong>${ingredienteMaestro ? ingredienteMaestro.nombre : 'Ingrediente no encontrado'}</strong><br>
+                    <small>${ipr.cantidad} ${ingredienteMaestro ? ingredienteMaestro.unidad : ''}</small>
+                </div>
+                 <button class="item-menu" onclick="event.stopPropagation(); showEditIngredientInRecipeForm('${ipr.id}', '${recipeId}')">${ICONS.options}</button>
+            </div>
+        `
+    }).join('');
+}
+
+function showIngredientForm(ingredientId = null) {
+    const isEditing = ingredientId !== null;
+    const ing = isEditing ? db.ingredients.find(i => i.id === ingredientId) : {};
+    
+    const formScreen = document.getElementById('form-screen');
+    formScreen.innerHTML = `
+        <header>
+            <button class="back-button" onclick="showScreen('main-screen'); renderTabContent('ingredients');">${ICONS.back}</button>
+            <h2>${isEditing ? 'Editar' : 'Nuevo'} Ingrediente</h2>
+        </header>
+        <form id="ingredient-form" style="background-color: var(--surface); padding: 20px; border-radius: 16px;">
+            <div class="form-group">
+                <label>Nombre del Ingrediente</label>
+                <input type="text" id="ing-nombre" value="${ing.nombre || ''}" required>
+            </div>
+            <div class="form-group">
+                <label>Precio Pagado por el Paquete (S/)</label>
+                <input type="number" step="0.01" id="ing-precio" value="${ing.precio || ''}" required>
+            </div>
+            <div class="form-group">
+                <label>Cantidad total del Paquete</label>
+                <input type="number" step="any" id="ing-tamano" value="${ing.tamano || ''}" required>
+            </div>
+            <div class="form-group">
+                <label>Unidad de Medida</label>
+                <select id="ing-unidad">
+                    <option value="gr" ${ing.unidad === 'gr' ? 'selected' : ''}>gr (gramo)</option>
+                    <option value="ml" ${ing.unidad === 'ml' ? 'selected' : ''}>ml (mililitro)</option>
+                    <option value="unidad" ${ing.unidad === 'unidad' ? 'selected' : ''}>unidad</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">${isEditing ? 'Guardar Cambios' : 'Guardar Ingrediente'}</button>
+            ${isEditing ? `<button type="button" class="btn btn-danger" onclick="deleteIngredient('${ingredientId}')">Eliminar Ingrediente</button>` : ''}
+        </form>
+    `;
+    showScreen('form-screen');
+    
+    document.getElementById('ingredient-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const updatedData = {
+            nombre: document.getElementById('ing-nombre').value,
+            precio: parseFloat(document.getElementById('ing-precio').value),
+            tamano: parseFloat(document.getElementById('ing-tamano').value),
+            unidad: document.getElementById('ing-unidad').value,
+        };
+        if (updatedData.tamano > 0) {
+            updatedData.costoPorUnidad = updatedData.precio / updatedData.tamano;
+        } else {
+            updatedData.costoPorUnidad = 0;
+        }
+
+        if (isEditing) {
+            const ingIndex = db.ingredients.findIndex(i => i.id === ingredientId);
+            db.ingredients[ingIndex] = { ...db.ingredients[ingIndex], ...updatedData };
+        } else {
+            updatedData.id = 'ing-' + Date.now();
+            db.ingredients.push(updatedData);
+        }
+        showScreen('main-screen');
+        renderTabContent('ingredients');
+    });
+}
+
+function showRecipeForm(recipeId = null) {
+    const isEditing = recipeId !== null;
+    const recipe = isEditing ? db.recipes.find(r => r.id === recipeId) : {};
+
+    const formScreen = document.getElementById('form-screen');
+    formScreen.innerHTML = `
+        <header>
+            <button class="back-button" onclick="showScreen('main-screen'); renderTabContent('recipes');">${ICONS.back}</button>
+            <h2>${isEditing ? 'Editar' : 'Nueva'} Receta</h2>
+        </header>
+        <form id="recipe-form" style="background-color: var(--surface); padding: 20px; border-radius: 16px;">
+            <div class="form-group">
+                <label>Nombre de la Receta</label>
+                <input type="text" id="rec-nombre" value="${recipe.nombre || ''}" required>
+            </div>
+            <div class="form-group">
+                <label>¿Para cuántas porciones rinde?</label>
+                <input type="number" id="rec-porciones" value="${recipe.porciones || ''}" required>
+            </div>
+            <div class="form-group">
+                <label>Tiempo de Preparación (en horas)</label>
+                <input type="number" step="0.1" id="rec-tiempo" value="${recipe.tiempo || ''}" required>
+            </div>
+            <div class="form-group">
+                <label>Costo de Empaque y Otros (S/)</label>
+                <input type="number" step="0.01" id="rec-empaque" value="${recipe.empaque || 0}" required>
+            </div>
+            <button type="submit" class="btn btn-primary">${isEditing ? 'Guardar Cambios' : 'Crear Receta'}</button>
+            ${isEditing ? `<button type="button" class="btn btn-danger" onclick="deleteRecipe('${recipeId}')">Eliminar Receta</button>` : ''}
+        </form>
+    `;
+    showScreen('form-screen');
+    
+    document.getElementById('recipe-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const updatedData = {
+            nombre: document.getElementById('rec-nombre').value,
+            porciones: parseInt(document.getElementById('rec-porciones').value),
+            tiempo: parseFloat(document.getElementById('rec-tiempo').value),
+            empaque: parseFloat(document.getElementById('rec-empaque').value),
+        };
+
+        if (isEditing) {
+            const recIndex = db.recipes.findIndex(r => r.id === recipeId);
+            db.recipes[recIndex] = { ...db.recipes[recIndex], ...updatedData };
+        } else {
+            updatedData.id = 'rec-' + Date.now();
+            db.recipes.push(updatedData);
+        }
+        showScreen('main-screen');
+        renderTabContent('recipes');
+    });
+}
+
+function showAddIngredientToRecipeForm(recipeId) {
+    const formScreen = document.getElementById('form-screen');
+    if (db.ingredients.length === 0) {
+        alert("Primero debes añadir ingredientes a tu catálogo en la pestaña 'Ingredientes'.");
+        return;
+    }
+    const optionsHtml = db.ingredients.map(ing => `<option value="${ing.id}">${ing.nombre} (${ing.unidad})</option>`).join('');
+    
+    formScreen.innerHTML = `
+        <header>
+            <button class="back-button" onclick="showRecipeDetail('${recipeId}')">${ICONS.back}</button>
+            <h2>Añadir Ingrediente</h2>
+        </header>
+        <form id="add-ing-to-recipe-form" style="background-color: var(--surface); padding: 20px; border-radius: 16px;">
+            <div class="form-group">
+                <label>Elegir Ingrediente</label>
+                <select id="ing-a-receta-id" required>${optionsHtml}</select>
+            </div>
+            <div class="form-group">
+                <label>Cantidad Usada en la Receta</label>
+                <input type="number" step="any" id="ing-a-receta-cantidad" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Añadir a Receta</button>
+        </form>
+    `;
+    showScreen('form-screen');
+    
+    document.getElementById('add-ing-to-recipe-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        db.ingredientsPerRecipe.push({
+            id: 'ipr-' + Date.now(),
+            recipeId: recipeId,
+            ingredientId: document.getElementById('ing-a-receta-id').value,
+            cantidad: parseFloat(document.getElementById('ing-a-receta-cantidad').value)
+        });
+        showRecipeDetail(recipeId);
+    });
+}
+
+function showEditIngredientInRecipeForm(iprId, recipeId) {
+    const ipr = db.ingredientsPerRecipe.find(i => i.id === iprId);
+    const ing = db.ingredients.find(i => i.id === ipr.ingredientId);
+    
+    const formScreen = document.getElementById('form-screen');
+    formScreen.innerHTML = `
+         <header>
+            <button class="back-button" onclick="showRecipeDetail('${recipeId}')">${ICONS.back}</button>
+            <h2>Editar Ingrediente</h2>
+        </header>
+        <form id="edit-ing-in-recipe-form" style="background-color: var(--surface); padding: 20px; border-radius: 16px;">
+             <div class="form-group">
+                <label>Ingrediente</label>
+                <input type="text" value="${ing.nombre}" disabled>
+            </div>
+            <div class="form-group">
+                <label>Nueva Cantidad Usada (${ing.unidad})</label>
+                <input type="number" step="any" id="edit-ing-cantidad" value="${ipr.cantidad}" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            <button type="button" class="btn btn-danger" onclick="deleteIngredientInRecipe('${iprId}', '${recipeId}')">Eliminar de la Receta</button>
+        </form>
+    `;
+    showScreen('form-screen');
+    
+    document.getElementById('edit-ing-in-recipe-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        ipr.cantidad = parseFloat(document.getElementById('edit-ing-cantidad').value);
+        showRecipeDetail(recipeId);
+    });
+}
+
+function saveProfileChanges() {
+    const newCostoHora = document.getElementById('profile-costo-hora').value;
+    const newCostoServicios = document.getElementById('profile-costo-servicios').value;
+    const newGanancia = document.getElementById('profile-ganancia').value;
+
+    if (newCostoHora && newCostoServicios && newGanancia) {
+        db.user.costoHora = parseFloat(newCostoHora);
+        db.user.costoServicios = parseFloat(newCostoServicios);
+        db.user.gananciaDeseada = parseFloat(newGanancia) / 100;
+        alert('¡Tus cambios han sido guardados con éxito!');
+    } else {
+        alert('Por favor, rellena todos los campos.');
+    }
+}
+
+function deleteIngredient(ingredientId) {
+    if (confirm('¿Estás seguro de que quieres eliminar este ingrediente de tu catálogo? Esto lo quitará de todas tus recetas.')) {
+        db.ingredients = db.ingredients.filter(i => i.id !== ingredientId);
+        db.ingredientsPerRecipe = db.ingredientsPerRecipe.filter(ipr => ipr.ingredientId !== ingredientId);
+        showScreen('main-screen');
+        renderTabContent('ingredients');
+    }
+}
+
+function deleteRecipe(recipeId) {
+    if (confirm('¿Estás seguro de que quieres eliminar esta receta permanentemente?')) {
+        db.recipes = db.recipes.filter(r => r.id !== recipeId);
+        db.ingredientsPerRecipe = db.ingredientsPerRecipe.filter(ipr => ipr.recipeId !== recipeId);
+        showScreen('main-screen');
+        renderTabContent('recipes');
+    }
+}
+
+function deleteIngredientInRecipe(iprId, recipeId) {
+     if (confirm('¿Estás seguro de que quieres quitar este ingrediente de la receta?')) {
+        db.ingredientsPerRecipe = db.ingredientsPerRecipe.filter(ipr => ipr.id !== iprId);
+        showRecipeDetail(recipeId);
+    }
+}
+    </script>
+
+</body>
+</html>
