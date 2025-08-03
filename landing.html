@@ -47,8 +47,10 @@
             </p>
             
             <!-- El 'action' es un truco para que al dar "enter" no recargue la página. Ideal para integrar con servicios de email marketing más adelante -->
-            <form class="subscribe-form" action="javascript:void(0);">
-                <input type="email" placeholder="tu-correo@email.com" required>
+            <!-- CÓDIGO CORREGIDO Y LISTO PARA NETLIFY -->
+            <form class="subscribe-form" name="suscripciones-pro" method="POST" data-netlify="true">
+                <input type="hidden" name="form-name" value="suscripciones-pro" />
+                <input type="email" name="email" placeholder="tu-correo@email.com" required>
                 <button type="submit" class="btn btn-primary">¡Quiero mi descuento!</button>
             </form>
         </section>
