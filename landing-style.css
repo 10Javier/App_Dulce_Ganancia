@@ -1,0 +1,186 @@
+/* Hoja de Estilos para la Landing Page de Dulce Ganancia */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+
+:root {
+    --primary: #E17055;
+    --primary-dark: #D35400;
+    --secondary: #FDF5E6; 
+    --background: #FFFFFF;
+    --text-primary: #2D3436;
+    --text-secondary: #636E72;
+    --border-color: #E9ECEF;
+    --success: #27AE60;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background-color: var(--background);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+}
+
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 0;
+}
+
+/* --- HERO SECTION --- */
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    padding-top: 40px;
+    padding-bottom: 80px;
+}
+
+.hero-text {
+    max-width: 550px;
+}
+
+.hero-text h1 {
+    font-size: 3.5rem; /* 56px */
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 0 0 20px 0;
+    color: var(--text-primary);
+}
+
+.hero-text h1 .highlight {
+    color: var(--primary);
+}
+
+.hero-text p {
+    font-size: 1.125rem; /* 18px */
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 15px 30px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+.btn:hover { transform: translateY(-3px); }
+.btn-primary { background-color: var(--primary); color: white; }
+.btn-secondary { background-color: var(--border-color); color: var(--text-primary); }
+
+.hero-visual {
+    flex-shrink: 0;
+}
+
+.phone-mockup {
+    width: 320px;
+    height: 650px;
+    background-color: #111;
+    border: 8px solid #111;
+    border-radius: 40px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.phone-screen {
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    border-radius: 32px;
+    overflow: hidden;
+}
+
+.phone-screen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+}
+
+/* --- FORMULARIO COMING SOON --- */
+.coming-soon {
+    background-color: var(--secondary);
+    border-radius: 24px;
+    padding: 60px;
+    text-align: center;
+}
+
+.coming-soon h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-top: 0;
+}
+
+.coming-soon p {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto 30px auto;
+}
+
+.subscribe-form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.subscribe-form input {
+    flex-grow: 1;
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+}
+.subscribe-form input:focus { outline-color: var(--primary); }
+
+/* --- FOOTER --- */
+footer {
+    text-align: center;
+    padding: 30px 0;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+footer a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* --- RESPONSIVE DESIGN --- */
+@media (max-width: 992px) {
+    .hero {
+        flex-direction: column;
+        text-align: center;
+    }
+    .cta-buttons {
+        justify-content: center;
+    }
+    .phone-mockup {
+        width: 280px;
+        height: 570px;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-text h1 { font-size: 2.5rem; }
+    .hero-text p { font-size: 1rem; }
+    .coming-soon { padding: 40px 20px; }
+    .coming-soon h2 { font-size: 2rem; }
+    .subscribe-form { flex-direction: column; }
+}
